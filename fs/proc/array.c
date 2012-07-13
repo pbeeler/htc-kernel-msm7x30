@@ -513,7 +513,11 @@ static int do_task_stat(struct seq_file *m, struct pid_namespace *ns,
 		cputime_to_clock_t(gtime),
 		cputime_to_clock_t(cgtime),
 #ifdef CONFIG_SCHEDSTATS
+#ifndef CONFIG_SCHED_BFS
 		nsec_to_clock_t(task->se.statistics.iowait_sum)
+#else
+		(unsigned long long)0UL
+#endif // CONFIG_SCHED_BFS
 #else
 		(unsigned long long)0UL
 #endif

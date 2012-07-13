@@ -28,6 +28,7 @@
 #include <linux/cpu.h>
 #include <linux/completion.h>
 #include <linux/mutex.h>
+#include <linux/sched.h>
 
 #define dprintk(msg...) cpufreq_debug_printk(CPUFREQ_DEBUG_CORE, \
 						"cpufreq-core", msg)
@@ -647,6 +648,32 @@ static ssize_t show_scaling_setspeed(struct cpufreq_policy *policy, char *buf)
 	return policy->governor->show_setspeed(policy, buf);
 }
 
+#ifdef CONFIG_CPU_FREQ_USER_FREQS
+extern ssize_t acpuclk_get_user_freqs(char *buf, struct cpufreq_policy *policy);
+static ssize_t show_user_freqs(struct cpufreq_policy *policy, char *buf)
+{
+	return acpuclk_get_user_freqs(buf, policy);
+}
+
+extern void acpuclk_set_user_freqs(unsigned acpu_khz, struct cpufreq_policy *policy);
+static ssize_t store_user_freqs(struct cpufreq_policy *policy, const char *buf, size_t count)
+{
+	unsigned int ret, freq;
+
+	ret = sscanf(buf, "%u", &freq);
+	if (ret != 1)
+		return -EINVAL;
+
+	/* Do not allow the changing of the policy min or the policy max */
+	if (policy->min == freq || policy->max == freq)
+		return -EINVAL;
+		
+	acpuclk_set_user_freqs(freq, policy);
+	
+	return count;
+}
+#endif //CONFIG_CPU_FREQ_USER_FREQS
+
 /**
  * show_scaling_driver - show the current cpufreq HW/BIOS limitation
  */
@@ -676,6 +703,9 @@ cpufreq_freq_attr_rw(scaling_min_freq);
 cpufreq_freq_attr_rw(scaling_max_freq);
 cpufreq_freq_attr_rw(scaling_governor);
 cpufreq_freq_attr_rw(scaling_setspeed);
+#ifdef CONFIG_CPU_FREQ_USER_FREQS
+cpufreq_freq_attr_rw(user_freqs);
+#endif
 
 static struct attribute *default_attrs[] = {
 	&cpuinfo_min_freq.attr,
@@ -689,6 +719,9 @@ static struct attribute *default_attrs[] = {
 	&scaling_driver.attr,
 	&scaling_available_governors.attr,
 	&scaling_setspeed.attr,
+#ifdef CONFIG_CPU_FREQ_USER_FREQS
+	&user_freqs.attr,
+#endif
 	NULL
 };
 
@@ -1543,6 +1576,12 @@ int __cpufreq_driver_target(struct cpufreq_policy *policy,
 		target_freq, relation);
 	if (cpu_online(policy->cpu) && cpufreq_driver->target)
 		retval = cpufreq_driver->target(policy, target_freq, relation);
+	if (likely(retval != -EINVAL)) {
+		if (target_freq == policy->max)
+			cpu_nonscaling(policy->cpu);
+		else
+			cpu_scaling(policy->cpu);
+	}
 
 	return retval;
 }
