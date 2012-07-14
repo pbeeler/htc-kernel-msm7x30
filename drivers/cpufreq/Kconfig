@@ -140,13 +140,6 @@ config CPU_FREQ_DEFAULT_GOV_CONSERVATIVE
 	  governor. If unsure have a look at the help section of the
 	  driver. Fallback governor will be the performance governor.
 
-config CPU_FREQ_DEFAULT_GOV_INTELLIDEMAND
-	bool "intellidemand"
-	select CPU_FREQ_GOV_INTELLIDEMAND
-	select CPU_FREQ_GOV_PERFORMANCE
-	help
-	  Intelligent OnDemand Govneror based on Samsung Patched OnDemand
-
 config CPU_FREQ_DEFAULT_GOV_INTERACTIVE
 	bool "interactive"
 	select CPU_FREQ_GOV_INTERACTIVE
@@ -155,6 +148,31 @@ config CPU_FREQ_DEFAULT_GOV_INTERACTIVE
 	  you to get a full dynamic cpu frequency capable system by simply
 	  loading your cpufreq low-level hardware driver, using the
 	  'interactive' governor for latency-sensitive workloads.
+
+config CPU_FREQ_DEFAULT_GOV_LAGFREE
+	bool "lagfree"
+	select CPU_FREQ_GOV_LAGFREE
+	select CPU_FREQ_GOV_PERFORMANCE
+	help
+	  Use the CPUFreq governor 'lagfree' as default. This allows
+	  you to get a full dynamic frequency capable system by simply
+	  loading your cpufreq low-level hardware driver.
+	  Be aware that not all cpufreq drivers support the lagfree
+	  governor. If unsure have a look at the help section of the
+	  driver. Fallback governor will be the performance governor.
+
+config CPU_FREQ_DEFAULT_GOV_LULZACTIVE
+	bool "lulzactive"
+	select CPU_FREQ_GOV_LULZACTIVE
+	select CPU_FREQ_GOV_PERFORMANCE
+	help
+	  Use the CPUFreq governor 'lulzactive' as default.
+
+config CPU_FREQ_DEFAULT_GOV_LAZY
+	bool "lazy"
+	select CPU_FREQ_GOV_LAZY
+	help
+	  Use the CPUFreq governor 'lazy' as default.
 
 endchoice
 
@@ -200,6 +218,31 @@ config CPU_FREQ_GOV_SMARTASS2_INPUT
 	  CPU to max frequency when an input event is received.
 
 	  If in doubt, say N.
+
+config CPU_FREQ_GOV_LAGFREE
+        tristate "'lagfree' cpufreq governor"
+        depends on CPU_FREQ
+        help
+          'lagfree' - this driver is rather similar to the 'ondemand'
+          governor both in its source code and its purpose, the difference is
+          its optimisation for better suitability in a battery powered
+          environment. The frequency is gracefully increased and decreased
+          rather than jumping to 100% when speed is required.
+
+          To compile this driver as a module, choose M here: the
+          module will be called cpufreq_lagfree.
+
+          For details, take a look at linux/Documentation/cpu-freq.
+
+          If in doubt, say N.
+
+config CPU_FREQ_GOV_LAGFREE_INPUT
+	bool "Ramp up CPU frequency on input events"
+	default y
+	depends on CPU_FREQ_GOV_LAGFREE
+	help
+	  Enable installation of an input event handler which will ramp up the
+	  CPU to max frequency when an input event is received.
 
 config CPU_FREQ_GOV_SCARY
     tristate "'scary' cpufreq governor"
@@ -286,20 +329,6 @@ config CPU_FREQ_GOV_MINMAX_INPUT
 	  Enable installation of an input event handler which will ramp up the
 	  CPU to max frequency when an input event is received.
 
-config CPU_FREQ_GOV_INTELLIDEMAND
-	tristate "'intellidemand' cpufreq governor"
-	depends on CPU_FREQ
-	help
-	  'intellidemand' - an intelligent ondemand governor
-
-config CPU_FREQ_GOV_INTELLIDEMAND_INPUT
-	bool "Ramp up CPU frequency on input events"
-	default y
-	depends on CPU_FREQ_GOV_INTELLIDEMAND
-	help
-	  Enable installation of an input event handler which will ramp up the
-	  CPU to max frequency when an input event is received.
-
 config CPU_FREQ_GOV_INTERACTIVE
 	tristate "'interactive' cpufreq policy governor"
 	help
@@ -316,6 +345,37 @@ config CPU_FREQ_GOV_INTERACTIVE
 	  For details, take a look at linux/Documentation/cpu-freq.
 
 	  If in doubt, say N.
+
+config CPU_FREQ_GOV_LULZACTIVE
+	tristate "'lulzactive' cpufreq governor"
+	depends on CPU_FREQ
+	help
+	  'lulzactive' - a new interactive governor by Tegrak!
+
+	  If in doubt, say N.
+
+config CPU_FREQ_GOV_LULZACTIVE_INPUT
+	bool "Ramp up CPU frequency on input events"
+	default y
+	depends on CPU_FREQ_GOV_LULZACTIVE
+	help
+	  Enable installation of an input event handler which will ramp up the
+	  CPU to max frequency when an input event is received.
+
+config CPU_FREQ_GOV_LAZY
+        tristate "'lazy' cpufreq governor"
+        depends on CPU_FREQ
+	help
+	  'cpufreq_lazy' - A dynamic cpufreq governor for Low Latency Frequency 
+          Transition capable processors
+
+config CPU_FREQ_GOV_LAZY_INPUT
+	bool "Ramp up CPU frequency on input events"
+	default y
+	depends on CPU_FREQ_GOV_LAZY
+	help
+	  Enable installation of an input event handler which will ramp up the
+	  CPU to max frequency when an input event is received.
 
 config CPU_FREQ_GOV_CONSERVATIVE
 	tristate "'conservative' cpufreq governor"
