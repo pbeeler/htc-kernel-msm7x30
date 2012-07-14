@@ -68,6 +68,12 @@ config CPU_FREQ_DEFAULT_GOV_SMARTASS
     help
         Use the CPUFreq governor 'smartass' as default.
 
+config CPU_FREQ_DEFAULT_GOV_SMARTASS2
+	bool "smartass2"
+	select CPU_FREQ_GOV_SMARTASS2
+	help
+	  Use the CPUFreq governor 'smartassV2' as default.
+
 config CPU_FREQ_DEFAULT_GOV_SCARY
     bool "scary"
     select CPU_FREQ_GOV_SCARY
@@ -113,6 +119,15 @@ config CPU_FREQ_DEFAULT_GOV_ONDEMAND
 	  governor. If unsure have a look at the help section of the
 	  driver. Fallback governor will be the performance governor.
 
+config CPU_FREQ_DEFAULT_GOV_MINMAX
+    bool "minmax"
+    select CPU_FREQ_GOV_MINMAX
+    select CPU_FREQ_GOV_PERFORMANCE
+    help
+      Use the CPUFreq governor 'minmax' as default. This minimizes the
+      frequency jumps does by the governor. This is aimed at maximizing
+      both perfomance and battery life.
+
 config CPU_FREQ_DEFAULT_GOV_CONSERVATIVE
 	bool "conservative"
 	select CPU_FREQ_GOV_CONSERVATIVE
@@ -124,6 +139,13 @@ config CPU_FREQ_DEFAULT_GOV_CONSERVATIVE
 	  Be aware that not all cpufreq drivers support the conservative
 	  governor. If unsure have a look at the help section of the
 	  driver. Fallback governor will be the performance governor.
+
+config CPU_FREQ_DEFAULT_GOV_INTELLIDEMAND
+	bool "intellidemand"
+	select CPU_FREQ_GOV_INTELLIDEMAND
+	select CPU_FREQ_GOV_PERFORMANCE
+	help
+	  Intelligent OnDemand Govneror based on Samsung Patched OnDemand
 
 config CPU_FREQ_DEFAULT_GOV_INTERACTIVE
 	bool "interactive"
@@ -162,6 +184,22 @@ config CPU_FREQ_GOV_SMARTASS_INPUT
 	help
 	  Enable installation of an input event handler which will ramp up the
 	  CPU to max frequency when an input event is received.
+
+config CPU_FREQ_GOV_SMARTASS2
+	tristate "'smartassV2' cpufreq governor"
+	depends on CPU_FREQ
+	help
+	  'smartassV2' - a "smart" optimized governor for the hero!
+
+config CPU_FREQ_GOV_SMARTASS2_INPUT
+	bool "Ramp up CPU frequency on input events"
+	default y
+	depends on CPU_FREQ_GOV_SMARTASS2
+	help
+	  Enable installation of an input event handler which will ramp up the
+	  CPU to max frequency when an input event is received.
+
+	  If in doubt, say N.
 
 config CPU_FREQ_GOV_SCARY
     tristate "'scary' cpufreq governor"
@@ -226,6 +264,38 @@ config CPU_FREQ_GOV_ONDEMAND_INPUT
 	bool "Ramp up CPU frequency on input events"
 	default y
 	depends on CPU_FREQ_GOV_ONDEMAND
+	help
+	  Enable installation of an input event handler which will ramp up the
+	  CPU to max frequency when an input event is received.
+
+config CPU_FREQ_GOV_MINMAX
+    tristate "'minmax' cpufreq governor"
+    depends on CPU_FREQ
+    help
+      'minmax' - this driver tries to minimize the frequency jumps by limiting
+      the the selected frequencies to either the min or the max frequency of
+      the policy. The frequency is selected according to the load.
+ 
+      If in doubt, say N.
+
+config CPU_FREQ_GOV_MINMAX_INPUT
+	bool "Ramp up CPU frequency on input events"
+	default y
+	depends on CPU_FREQ_GOV_MINMAX
+	help
+	  Enable installation of an input event handler which will ramp up the
+	  CPU to max frequency when an input event is received.
+
+config CPU_FREQ_GOV_INTELLIDEMAND
+	tristate "'intellidemand' cpufreq governor"
+	depends on CPU_FREQ
+	help
+	  'intellidemand' - an intelligent ondemand governor
+
+config CPU_FREQ_GOV_INTELLIDEMAND_INPUT
+	bool "Ramp up CPU frequency on input events"
+	default y
+	depends on CPU_FREQ_GOV_INTELLIDEMAND
 	help
 	  Enable installation of an input event handler which will ramp up the
 	  CPU to max frequency when an input event is received.
