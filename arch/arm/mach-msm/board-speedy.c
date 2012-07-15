@@ -1955,6 +1955,7 @@ static struct android_pmem_platform_data android_pmem_ciq_pdata = {
     .name           = "pmem_ciq",
     .start          = MSM_PMEM_CIQ_BASE,
     .size           = MSM_PMEM_CIQ_SIZE,
+    .no_allocator   = 0,
     .cached         = 0,
 };
 
@@ -1962,6 +1963,7 @@ static struct android_pmem_platform_data android_pmem_ciq1_pdata = {
     .name           = "pmem_ciq1",
     .start          = MSM_PMEM_CIQ1_BASE,
     .size           = MSM_PMEM_CIQ1_SIZE,
+    .no_allocator   = 0,
     .cached         = 0,
 };
 
@@ -1969,6 +1971,7 @@ static struct android_pmem_platform_data android_pmem_ciq2_pdata = {
     .name           = "pmem_ciq2",
     .start          = MSM_PMEM_CIQ2_BASE,
     .size           = MSM_PMEM_CIQ2_SIZE,
+    .no_allocator   = 0,
     .cached         = 0,
 };
 
@@ -1976,6 +1979,7 @@ static struct android_pmem_platform_data android_pmem_ciq3_pdata = {
     .name           = "pmem_ciq3",
     .start          = MSM_PMEM_CIQ3_BASE,
     .size           = MSM_PMEM_CIQ3_SIZE,
+    .no_allocator   = 0,
     .cached         = 0,
 };
 #endif
